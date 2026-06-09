@@ -17,6 +17,13 @@ The first public artifact is a minimal Rust agent-side SDK sketch in [`src/lib.r
 
 The SDK does not sign transactions or manage private keys. Wallet signing and payment submission stay in the agent application's own custody layer.
 
+Additional public docs:
+
+- [`SPEC.md`](SPEC.md): protocol sketch and state mapping.
+- [`PROVIDER.md`](PROVIDER.md): provider integration guide.
+- [`examples/agent_request.rs`](examples/agent_request.rs): agent-side request flow.
+- [`examples/provider_config.rs`](examples/provider_config.rs): provider configuration surface.
+
 ```rust
 use monad_mpp_i::{
     ChatCompletionRequest, ChatMessage, ChatRole, MppiAgentClient, QuoteRequest,
@@ -75,3 +82,10 @@ Hackathon-era public SDK sketch. The interface is intended to communicate the pr
 The overview deck explains the MPP-I thesis, Monad-native payment-state mapping, and the inference payment flow:
 
 [View the MPP-I overview deck](docs/mpp-i-deck.pdf)
+
+## License
+
+Licensed under either of:
+
+- MIT license ([LICENSE-MIT](LICENSE-MIT))
+- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE))

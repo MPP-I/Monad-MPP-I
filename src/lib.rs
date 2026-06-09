@@ -208,15 +208,35 @@ pub enum PaymentState {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type", content = "data")]
 pub enum MppiStreamEvent {
+    #[serde(rename = "stream.start")]
+    StreamStart {
+        #[serde(default)]
+        session_id: Option<String>,
+        #[serde(default)]
+        payment_state: Option<PaymentState>,
+    },
     #[serde(rename = "token.delta")]
     TokenDelta {
         delta: String,
+        #[serde(default)]
         cumulative_output_tokens: u64,
+    },
+    #[serde(rename = "usage")]
+    Usage {
+        input_tokens: u64,
+        output_tokens: u64,
+        #[serde(default)]
+        amount_due_wei: Option<String>,
     },
     #[serde(rename = "stream.done")]
     StreamDone { settlement: Settlement },
     #[serde(rename = "error")]
     Error { code: String, message: String },
+}
+
+/// Parse one newline-delimited MPP-I stream event.
+pub fn parse_stream_event(line: &str) -> Result<MppiStreamEvent, MppiError> {
+    Ok(serde_json::from_str(line)?)
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -234,6 +254,8 @@ pub enum MppiError {
     Url(#[from] url::ParseError),
     #[error("HTTP transport error: {0}")]
     Transport(#[from] reqwest::Error),
+    #[error("invalid stream event JSON: {0}")]
+    Json(#[from] serde_json::Error),
     #[error("provider returned HTTP {status}: {body}")]
     Provider { status: u16, body: String },
 }
@@ -248,5 +270,48 @@ async fn parse_json_response<T: for<'de> Deserialize<'de>>(
             status: response.status().as_u16(),
             body: response.text().await.unwrap_or_default(),
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{parse_stream_event, MppiStreamEvent};
+
+    #[test]
+    fn parse_token_delta_event() {
+        let event = parse_stream_event(
+            r#"{"type":"token.delta","data":{"delta":"Monad","cumulative_output_tokens":1}}"#,
+        )
+        .expect("event should parse");
+
+        match event {
+            MppiStreamEvent::TokenDelta {
+                delta,
+                cumulative_output_tokens,
+            } => {
+                assert_eq!(delta, "Monad");
+                assert_eq!(cumulative_output_tokens, 1);
+            }
+            other => panic!("unexpected event: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_settlement_event() {
+        let event = parse_stream_event(
+            r#"{"type":"stream.done","data":{"settlement":{"input_tokens":10,"output_tokens":20,"amount_due_wei":"30","refund_wei":"70","tx_hash":"tx"}}}"#,
+        )
+        .expect("event should parse");
+
+        match event {
+            MppiStreamEvent::StreamDone { settlement } => {
+                assert_eq!(settlement.input_tokens, 10);
+                assert_eq!(settlement.output_tokens, 20);
+                assert_eq!(settlement.amount_due_wei, "30");
+                assert_eq!(settlement.refund_wei, "70");
+                assert_eq!(settlement.tx_hash, "tx");
+            }
+            other => panic!("unexpected event: {other:?}"),
+        }
     }
 }

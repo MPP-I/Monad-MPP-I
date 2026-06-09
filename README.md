@@ -6,6 +6,19 @@ The goal is to let agents buy streaming inference from providers without API key
 
 This public repository is intentionally small. It does not include private demo code, private keys, deployment addresses, recorded model responses, internal planning notes, or provider infrastructure.
 
+## Overview Deck
+
+The overview deck explains the MPP-I thesis, Monad-native payment-state mapping, and the inference payment flow.
+
+[View the PDF deck](docs/mpp-i-deck.pdf)
+
+![MPP-I deck slide 1](docs/slides/slide-01.png)
+![MPP-I deck slide 2](docs/slides/slide-02.png)
+![MPP-I deck slide 3](docs/slides/slide-03.png)
+![MPP-I deck slide 4](docs/slides/slide-04.png)
+![MPP-I deck slide 5](docs/slides/slide-05.png)
+![MPP-I deck slide 6](docs/slides/slide-06.png)
+
 ## Rust Agent SDK Sketch
 
 The first public artifact is a minimal Rust agent-side SDK sketch in [`src/lib.rs`](src/lib.rs). It shows the intended integration surface for an agent calling an MPP-I inference provider:
@@ -76,12 +89,6 @@ agent request
 ## Status
 
 Hackathon-era public SDK sketch. The interface is intended to communicate the protocol shape, not to be treated as a finalized production SDK.
-
-## Deck
-
-The overview deck explains the MPP-I thesis, Monad-native payment-state mapping, and the inference payment flow:
-
-[View the MPP-I overview deck](docs/mpp-i-deck.pdf)
 
 ## License
 

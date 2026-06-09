@@ -69,3 +69,9 @@ agent request
 ## Status
 
 Hackathon-era public SDK sketch. The interface is intended to communicate the protocol shape, not to be treated as a finalized production SDK.
+
+## Deck
+
+The overview deck explains the MPP-I thesis, Monad-native payment-state mapping, and the inference payment flow:
+
+[View the MPP-I overview deck](docs/mpp-i-deck.pdf)
